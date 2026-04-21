@@ -1,4 +1,4 @@
-import * as jwt from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 export const createTokenPayload = async (payload) => {
   return payload;
 };
@@ -23,7 +23,7 @@ export const extractTokenFromHeaders = async (authHeaders) => {
   const prefix = authHeaders.split(" ")[0];
   if (!prefix) {
     throw new Error("No prefix provided");
-  }
+  } 
   const token = authHeaders.split(" ")[1];
   return token;
 };
