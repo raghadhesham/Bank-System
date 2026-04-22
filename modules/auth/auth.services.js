@@ -7,10 +7,14 @@ import {
   generateRefreshToken,
 } from "../../common/utils/token.js";
 import { signupSchema, loginSchema } from "./auth.validation.js";
+import { accountModel } from "../../models/bankAccount.model.js";
 
 export const signup = async (req, res) => {
   const { firstName, lastName, email, password, cpassword } = req.body;
-  if (cpassword!==password) {
+  try {
+    signupSchema.body.parse(req.body);
+  } catch (error) {}
+  if (cpassword !== password) {
     throw new Error("passwords don't match");
   }
   const hashed = await hash(password, 12);
@@ -25,10 +29,20 @@ export const signup = async (req, res) => {
     model: userModel,
     data: { firstName, lastName, email, password: hashed },
   });
+  console.log(user);
+
+  let [{ _id: userId }] = user;
+  console.log(userId);
+  let accountNumber = Math.random().toString().slice(2, 12);
+  const account = await create({
+    model: accountModel,
+    data: { userId, accountNumber },
+  });
   res.status(201).json({ message: "User created successfully" });
 };
 export const login = async (req, res) => {
   const { email, password } = req.body;
+  loginSchema.body.parse(req.body);
   const user = await findOne({
     model: userModel,
   });

@@ -41,8 +41,7 @@ export const withdraw = async (req, res) => {
     const session = await db.startSession();
     await session.withTransaction(async () => {
       const userId = req.userId;
-      const validatedData = withdrawSchema.parse(req.body);
-      const { amountTobeWithDrawn } = validatedData;
+      const { amountTobeWithDrawn } = req.body;
       const account = await findOne({
         model: accountModel,
         filter: { userId },
@@ -85,20 +84,26 @@ export const withdraw = async (req, res) => {
   }
 };
 export const deposit = async (req, res) => {
+  let session = await db.startSession();
   try {
-    const session = await db.startSession();
     await session.withTransaction(async () => {
       const userId = req.userId;
-      const validatedData = depositSchema.parse(req.body);
-      const { amountTobeDeposited } = validatedData;
+      const { amountTobeDeposited } = req.body;
+      console.log(amountTobeDeposited);
+      console.log("userId",userId);
+      
       const account = await findOne({
         model: accountModel,
         filter: { userId },
         session,
       });
+      console.log("account", account);
+
       if (!account) {
         throw new Error("Account not found");
       }
+      console.log(userId);
+
       const balance = account.balance;
       const newBalance = balance + amountTobeDeposited;
       await findOneAndUpdate({
@@ -119,9 +124,10 @@ export const deposit = async (req, res) => {
         },
         session,
       });
-      res.status(200).json({
-        message: `Money Deposited Done Successfully, your balance now is ${newBalance}`,
-      });
+      result = newBalance;
+    });
+    res.status(200).json({
+      message: `Money Deposited Done Successfully, your balance now is ${result}`,
     });
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -134,8 +140,7 @@ export const transfer = async (req, res) => {
     const session = await db.startSession();
     await session.withTransaction(async () => {
       const userId = req.userId;
-      const validatedData = transferSchema.parse(req.body);
-      const { accountNumber, moneyAmount } = validatedData;
+      const { accountNumber, moneyAmount } = req.body;
       const senderAccount = await findOne({
         model: accountModel,
         filter: { userId },

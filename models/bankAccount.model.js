@@ -6,20 +6,20 @@ const accountSchema = new mongoose.Schema({
         ref: "User"
     },
     accountNumber: {
-        type: Number,
+        type: String,
         required:true,
     },
     balance: {
         type: Number,
-        required:true,
+        default:0
     },
     currency: {
         type: String,
-        required:true
+        default:"EGP"
     },
     status: {
         type: String,
-        required:true
+        default:"active"
     },
 
 

@@ -11,3 +11,4 @@ export const getAccount = async (req, res) => {
   });
   res.status(200).json({ accountData });
 };
+    
